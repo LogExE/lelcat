@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 int main(int argc, char **argv)
 {
@@ -29,15 +30,16 @@ int main(int argc, char **argv)
 			fprintf(stderr, "File %s doesn't exist! Exiting.\n", argv[k]);
 			return -2;
 		}
-		char ch[] = {' ', '\0'};
+		char ch;
 		short i = 0, j = 31, add = 1;
-		while ((ch[0] = fgetc(file)) != EOF)
+		while ((ch = fgetc(file)) != EOF)
 		{
-			printf("\033[%d;%dm%c", i, j, ch[0]);
-			if (ch[0] == '\n' || ch[0] == '\t')
+			if (iscntrl(ch))
 			{
+				printf("%c", ch);
 				continue;
 			}
+			printf("\033[%d;%dm%c", i, j, ch);
 			if (i)
 			{
 				++j;
@@ -48,9 +50,9 @@ int main(int argc, char **argv)
 			{
 				j = 31;
 			}
+			printf("\033[0m");
 		}
 		fclose(file);
 	}
-	printf("\033[0m");
 	return 0;
 }
